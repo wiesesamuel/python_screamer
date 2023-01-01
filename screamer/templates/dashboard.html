@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Toast message -->
+<div class="toast fixed-top toast-top-full-width" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="toast-header">
+    <strong class="mr-auto">Flask App</strong>
+    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="toast-body"></div>
+</div>
+
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="onoffswitch">
+          <button type="button" class="btn btn-lg btn-block text-center" id="system-button"
+                  {% if not system_state %}style="background-color: red"{% else %}style="background-color: green"{% endif %}
+                  onclick="flipSystemState()">
+            {% if not system_state %}System ist ausgeschalten{% else %}System ist angeschalten{% endif %}
+          </button>
+
+          <script>
+            function flipSystemState() {
+              // Send a request to the server to flip the system state
+              $.post('/flip-system-state', function(data) {
+                console.log(data);
+                // Update the button text and color based on the returned value
+                if (data.system_state) {
+                  $('#system-button').text('System ist angeschalten');
+                  $('#system-button').css('background-color', 'green');
+                } else {
+                  $('#system-button').text('System ist ausgeschalten');
+                  $('#system-button').css('background-color', 'red');
+                }
+                // Display the response in a toast message
+                $('.toast').toast('show');
+                $('.toast-body').text(data.msg);
+                // Hide the toast message after 5 seconds
+                setTimeout(function() {
+                  $('.toast').toast('hide');
+                }, 5000);
+              });
+            }
+          </script>
+
+
+
+
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <ul class="nav nav-tabs">
+
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#programm">Programm</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#manuel">Manuel</a>
+          </li>
+
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane container active" id="manuel">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Type</th>
+                  <th scope="col">Channels</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for device in devices %}
+                  <tr>
+                    <td>{{ device.type }}</td>
+                    <td>
+                      {% for channel in device.channels %}
+                        <button type="button" class="btn btn-secondary">{{ channel }}</button>
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="tab-pane container" id="programm">
+            {% for config in configuration %}
+              <div class="form-group">
+                <label for="{{ config.type }}">{{ config.type }}</label>
+                <input type="text" class="form-control" id="{{ config.type }}" value="{{ config.value }}">
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
