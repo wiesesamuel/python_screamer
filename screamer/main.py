@@ -1,36 +1,7 @@
-from flask import Flask, request
-from flask_httpauth import HTTPDigestAuth
-import os
-import dotenv
-
-dotenv.load_dotenv()
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '111111111111'
-auth = HTTPDigestAuth()
-
-users = {
-    "john": "hello",
-    "susan": "bye"
-}
-
-@auth.get_password
-def get_pw(username):
-    if username in users:
-        return users.get(username)
-    return None
+from flask import render_template
+from auth import *
 
 @app.route('/')
-@auth.login_required
-def index():
-    return "Hello, %s!" % auth.username()
-
-
-from flask import Flask, render_template
-
-app = Flask(__name__)
-
-@app.route('/asdf')
 def index():
     system_state = True
     devices = [

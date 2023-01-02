@@ -30,21 +30,23 @@
               // Send a request to the server to flip the system state
               $.post('/flip-system-state', function(data) {
                 console.log(data);
-                // Update the button text and color based on the returned value
-                if (data.system_state) {
-                  $('#system-button').text('System ist angeschalten');
-                  $('#system-button').css('background-color', 'green');
-                } else {
-                  $('#system-button').text('System ist ausgeschalten');
-                  $('#system-button').css('background-color', 'red');
+                if (data.success) {
+                  // Update the button text and color based on the returned value
+                  if (data.data.system_state) {
+                    $('#system-button').text('System ist angeschalten');
+                    $('#system-button').css('background-color', 'green');
+                  } else {
+                    $('#system-button').text('System ist ausgeschalten');
+                    $('#system-button').css('background-color', 'red');
+                  }
+                  // Display the response in a toast message
+                  $('.toast').toast('show');
+                  $('.toast-body').text(data.data.msg);
+                  // Hide the toast message after 5 seconds
+                  setTimeout(function() {
+                    $('.toast').toast('hide');
+                  }, 5000);
                 }
-                // Display the response in a toast message
-                $('.toast').toast('show');
-                $('.toast-body').text(data.msg);
-                // Hide the toast message after 5 seconds
-                setTimeout(function() {
-                  $('.toast').toast('hide');
-                }, 5000);
               });
             }
           </script>
